@@ -1,0 +1,53 @@
+PROMOTIONS = [
+    {
+        "title": "Весенний чайный сезон",
+        "slug": "spring-tea-season",
+        "description": "Мягкая сезонная акция на знакомство с витриной: спокойные сорта, красивые наборы и уютные покупки внутри Telegram.",
+        "image_url": "https://images.unsplash.com/photo-1507914372368-b2b085b925a1?auto=format&fit=crop&w=1200&q=80",
+        "badge_text": "Сезон",
+        "discount_type": "percent",
+        "discount_value": "7.00",
+        "is_sitewide": True,
+        "is_active": True,
+        "product_slugs": [],
+    },
+    {
+        "title": "Неделя улунов",
+        "slug": "oolong-week",
+        "description": "Подборка для тех, кто любит цветочный аромат и мягкую сливочную глубину: скидка действует на выбранные улуны.",
+        "image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+        "badge_text": "Улун",
+        "discount_type": "percent",
+        "discount_value": "10.00",
+        "is_sitewide": False,
+        "is_active": True,
+        "product_slugs": ["tie-guan-yin", "milk-oolong", "da-hong-pao"],
+    },
+]
+
+PROMO_CODES = [
+    {
+        "code": "TEA10",
+        "title": "Первый заказ",
+        "description": "Универсальный промокод на первое знакомство с витриной.",
+        "discount_type": "percent",
+        "discount_value": "10.00",
+        "is_sitewide": True,
+        "minimum_order_amount": "150000.00",
+        "max_uses": None,
+        "is_active": True,
+        "product_slugs": [],
+    },
+    {
+        "code": "PUER50000",
+        "title": "Скидка на пуэр",
+        "description": "Фиксированная скидка на выбранные сорта пуэра и промо-наборы.",
+        "discount_type": "fixed",
+        "discount_value": "50000.00",
+        "is_sitewide": False,
+        "minimum_order_amount": "220000.00",
+        "max_uses": 200,
+        "is_active": True,
+        "product_slugs": ["shu-puer-cake-357", "sheng-puer-spring", "promo-oolong-selection"],
+    },
+]

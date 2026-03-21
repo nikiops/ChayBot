@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+.venv313/
+alembic/__pycache__/
+*.db
+*.sqlite
+*.sqlite3
+*.log
+tmp_*.db
+
