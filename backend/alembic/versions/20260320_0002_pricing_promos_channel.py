@@ -16,6 +16,8 @@ depends_on = None
 
 
 def upgrade() -> None:
+    dialect = op.get_bind().dialect.name
+
     op.create_table(
         "product_pack_sizes",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -126,22 +128,46 @@ def upgrade() -> None:
             ["user_id", "product_id", "pack_size_id"],
         )
 
-    with op.batch_alter_table("orders", recreate="always") as batch:
-        batch.add_column(
-            sa.Column("subtotal_amount", sa.Numeric(10, 2), server_default=sa.text("0"), nullable=False)
-        )
-        batch.add_column(
-            sa.Column("discount_amount", sa.Numeric(10, 2), server_default=sa.text("0"), nullable=False)
-        )
-        batch.add_column(sa.Column("promo_code", sa.String(length=50), nullable=True))
+    if dialect == "sqlite":
+        with op.batch_alter_table("orders", recreate="always") as batch:
+            batch.add_column(
+                sa.Column("subtotal_amount", sa.Numeric(10, 2), server_default=sa.text("0"), nullable=False)
+            )
+            batch.add_column(
+                sa.Column("discount_amount", sa.Numeric(10, 2), server_default=sa.text("0"), nullable=False)
+            )
+            batch.add_column(sa.Column("promo_code", sa.String(length=50), nullable=True))
 
-    with op.batch_alter_table("order_items", recreate="always") as batch:
-        batch.add_column(sa.Column("pack_size_id", sa.Integer(), nullable=True))
-        batch.add_column(sa.Column("pack_label", sa.String(length=50), nullable=True))
-        batch.add_column(sa.Column("pack_weight_grams", sa.Integer(), nullable=True))
-        batch.create_index(op.f("ix_order_items_pack_size_id"), ["pack_size_id"], unique=False)
-        batch.create_foreign_key(
+        with op.batch_alter_table("order_items", recreate="always") as batch:
+            batch.add_column(sa.Column("pack_size_id", sa.Integer(), nullable=True))
+            batch.add_column(sa.Column("pack_label", sa.String(length=50), nullable=True))
+            batch.add_column(sa.Column("pack_weight_grams", sa.Integer(), nullable=True))
+            batch.create_index(op.f("ix_order_items_pack_size_id"), ["pack_size_id"], unique=False)
+            batch.create_foreign_key(
+                "fk_order_items_pack_size_id_product_pack_sizes",
+                "product_pack_sizes",
+                ["pack_size_id"],
+                ["id"],
+                ondelete="SET NULL",
+            )
+    else:
+        op.add_column(
+            "orders",
+            sa.Column("subtotal_amount", sa.Numeric(10, 2), server_default=sa.text("0"), nullable=False),
+        )
+        op.add_column(
+            "orders",
+            sa.Column("discount_amount", sa.Numeric(10, 2), server_default=sa.text("0"), nullable=False),
+        )
+        op.add_column("orders", sa.Column("promo_code", sa.String(length=50), nullable=True))
+
+        op.add_column("order_items", sa.Column("pack_size_id", sa.Integer(), nullable=True))
+        op.add_column("order_items", sa.Column("pack_label", sa.String(length=50), nullable=True))
+        op.add_column("order_items", sa.Column("pack_weight_grams", sa.Integer(), nullable=True))
+        op.create_index(op.f("ix_order_items_pack_size_id"), "order_items", ["pack_size_id"], unique=False)
+        op.create_foreign_key(
             "fk_order_items_pack_size_id_product_pack_sizes",
+            "order_items",
             "product_pack_sizes",
             ["pack_size_id"],
             ["id"],
@@ -150,17 +176,30 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    with op.batch_alter_table("order_items", recreate="always") as batch:
-        batch.drop_constraint("fk_order_items_pack_size_id_product_pack_sizes", type_="foreignkey")
-        batch.drop_index(op.f("ix_order_items_pack_size_id"))
-        batch.drop_column("pack_weight_grams")
-        batch.drop_column("pack_label")
-        batch.drop_column("pack_size_id")
+    dialect = op.get_bind().dialect.name
 
-    with op.batch_alter_table("orders", recreate="always") as batch:
-        batch.drop_column("promo_code")
-        batch.drop_column("discount_amount")
-        batch.drop_column("subtotal_amount")
+    if dialect == "sqlite":
+        with op.batch_alter_table("order_items", recreate="always") as batch:
+            batch.drop_constraint("fk_order_items_pack_size_id_product_pack_sizes", type_="foreignkey")
+            batch.drop_index(op.f("ix_order_items_pack_size_id"))
+            batch.drop_column("pack_weight_grams")
+            batch.drop_column("pack_label")
+            batch.drop_column("pack_size_id")
+
+        with op.batch_alter_table("orders", recreate="always") as batch:
+            batch.drop_column("promo_code")
+            batch.drop_column("discount_amount")
+            batch.drop_column("subtotal_amount")
+    else:
+        op.drop_constraint("fk_order_items_pack_size_id_product_pack_sizes", "order_items", type_="foreignkey")
+        op.drop_index(op.f("ix_order_items_pack_size_id"), table_name="order_items")
+        op.drop_column("order_items", "pack_weight_grams")
+        op.drop_column("order_items", "pack_label")
+        op.drop_column("order_items", "pack_size_id")
+
+        op.drop_column("orders", "promo_code")
+        op.drop_column("orders", "discount_amount")
+        op.drop_column("orders", "subtotal_amount")
 
     with op.batch_alter_table("cart_items", recreate="always") as batch:
         batch.drop_constraint("uq_cart_items_user_product_pack", type_="unique")
