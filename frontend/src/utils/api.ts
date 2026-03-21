@@ -17,13 +17,17 @@ import type {
   Product,
 } from "types/api";
 import { getRuntimeApiUrl } from "utils/runtime-config";
-import { getAuthHeaders } from "utils/telegram";
+import { getAuthHeaders, waitForTelegramInitData } from "utils/telegram";
 
 const API_URL = getRuntimeApiUrl();
 
 type ApiValidationIssue = {
   loc?: Array<string | number>;
   msg?: string;
+};
+
+type ApiErrorPayload = {
+  detail?: string | ApiValidationIssue[];
 };
 
 function formatValidationIssues(issues: ApiValidationIssue[]): string {
@@ -41,33 +45,57 @@ function formatValidationIssues(issues: ApiValidationIssue[]): string {
     .join("\n");
 }
 
+async function parseErrorMessage(response: Response): Promise<string> {
+  let message = "Ошибка запроса";
+  const raw = await response.text();
+  if (raw) {
+    try {
+      const payload = JSON.parse(raw) as ApiErrorPayload;
+      if (Array.isArray(payload.detail)) {
+        message = formatValidationIssues(payload.detail) || message;
+      } else if (typeof payload.detail === "string") {
+        message = payload.detail || raw || message;
+      } else {
+        message = raw || message;
+      }
+    } catch {
+      message = raw;
+    }
+  }
+  return message;
+}
+
+function isRetryableTelegramAuthError(status: number, message: string): boolean {
+  if (status !== 401) return false;
+  return message.includes("Telegram authorization required") || message.includes("Invalid Telegram signature");
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  await waitForTelegramInitData();
   const isFormData = init?.body instanceof FormData;
-  const response = await fetch(`${API_URL}${path}`, {
-    ...init,
-    headers: {
-      ...getAuthHeaders(),
-      ...(isFormData ? {} : { "Content-Type": "application/json" }),
-      ...(init?.headers ?? {}),
-    },
-  });
+
+  const makeRequest = () =>
+    fetch(`${API_URL}${path}`, {
+      ...init,
+      headers: {
+        ...getAuthHeaders(),
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
+        ...(init?.headers ?? {}),
+      },
+    });
+
+  let response = await makeRequest();
 
   if (!response.ok) {
-    let message = "Ошибка запроса";
-    const raw = await response.text();
-    if (raw) {
-      try {
-        const payload = JSON.parse(raw) as { detail?: string | ApiValidationIssue[] };
-        if (Array.isArray(payload.detail)) {
-          message = formatValidationIssues(payload.detail) || message;
-        } else if (typeof payload.detail === "string") {
-          message = payload.detail || raw || message;
-        } else {
-          message = raw || message;
-        }
-      } catch {
-        message = raw;
+    let message = await parseErrorMessage(response);
+    if (isRetryableTelegramAuthError(response.status, message)) {
+      await waitForTelegramInitData(1500);
+      response = await makeRequest();
+      if (!response.ok) {
+        message = await parseErrorMessage(response);
+        throw new Error(message);
       }
+      return response.json() as Promise<T>;
     }
     throw new Error(message);
   }

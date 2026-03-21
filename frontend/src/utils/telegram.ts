@@ -28,6 +28,8 @@ declare global {
 }
 
 const demoUserId = getRuntimeDemoUserId();
+const TELEGRAM_INIT_DATA_WAIT_MS = 2000;
+const TELEGRAM_INIT_DATA_POLL_MS = 50;
 
 export function getTelegramWebApp() {
   return window.Telegram?.WebApp;
@@ -41,6 +43,17 @@ export function initTelegramWebApp() {
   webApp.expand();
   webApp.setHeaderColor?.("#080706");
   webApp.setBackgroundColor?.("#080706");
+}
+
+export async function waitForTelegramInitData(timeoutMs = TELEGRAM_INIT_DATA_WAIT_MS): Promise<void> {
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < timeoutMs) {
+    const webApp = getTelegramWebApp();
+    if (!webApp) return;
+    if (webApp.initData) return;
+    await new Promise((resolve) => window.setTimeout(resolve, TELEGRAM_INIT_DATA_POLL_MS));
+  }
 }
 
 export function getAuthHeaders(): HeadersInit {
