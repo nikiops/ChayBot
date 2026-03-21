@@ -106,6 +106,7 @@ const PRODUCT_IMAGE_MAX_SIZE_BYTES = 6 * 1024 * 1024;
 const PRODUCT_IMAGE_ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const PRODUCT_IMAGE_MIN_WIDTH = 900;
 const PRODUCT_IMAGE_MIN_HEIGHT = 900;
+const MAX_MONEY_VALUE = 99_999_999.99;
 const PRODUCT_IMAGE_HINTS = [
   "Формат: JPG, PNG или WEBP",
   "Размер файла: до 6 МБ",
@@ -145,13 +146,16 @@ function validateProductFormState(form: ProductFormState): string | null {
   for (const [index, pack] of form.pack_sizes.entries()) {
     const prefix = `Фасовка ${index + 1}`;
     const price = Number(pack.price);
+    const oldPrice = pack.old_price ? Number(pack.old_price) : null;
     const stockQty = Number(pack.stock_qty);
     const sortOrder = Number(pack.sort_order);
 
     if (pack.label.trim().length < 2) return `${prefix}: укажите название длиной от 2 символов.`;
     if (pack.weight_grams && Number(pack.weight_grams) < 1) return `${prefix}: вес должен быть больше 0.`;
     if (!Number.isFinite(price) || price <= 0) return `${prefix}: цена должна быть больше 0.`;
-    if (pack.old_price && Number(pack.old_price) <= 0) return `${prefix}: старая цена должна быть больше 0.`;
+    if (price > MAX_MONEY_VALUE) return `${prefix}: цена не должна превышать 99 999 999.99.`;
+    if (oldPrice !== null && oldPrice <= 0) return `${prefix}: старая цена должна быть больше 0.`;
+    if (oldPrice !== null && oldPrice > MAX_MONEY_VALUE) return `${prefix}: старая цена не должна превышать 99 999 999.99.`;
     if (!Number.isFinite(stockQty) || stockQty < 0) return `${prefix}: остаток не может быть отрицательным.`;
     if (!Number.isFinite(sortOrder) || sortOrder < 0) return `${prefix}: порядок не может быть отрицательным.`;
   }

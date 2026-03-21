@@ -19,6 +19,17 @@ class AdminStatsOut(BaseModel):
     pending_payment_tickets_count: int
 
 
+MAX_MONEY_VALUE = Decimal("99999999.99")
+
+
+def _ensure_money_fits_db(value: Decimal | None, field_name: str) -> Decimal | None:
+    if value is None:
+        return None
+    if value > MAX_MONEY_VALUE:
+        raise ValueError(f"{field_name} не должна превышать 99 999 999.99.")
+    return value
+
+
 class AdminProductPackSizeIn(BaseModel):
     label: str = Field(min_length=2, max_length=50)
     weight_grams: int | None = Field(default=None, ge=1)
@@ -27,6 +38,16 @@ class AdminProductPackSizeIn(BaseModel):
     stock_qty: int = Field(default=0, ge=0)
     sort_order: int = Field(default=0, ge=0)
     is_default: bool = False
+
+    @field_validator("price")
+    @classmethod
+    def validate_price_limit(cls, value: Decimal) -> Decimal:
+        return _ensure_money_fits_db(value, "Цена")
+
+    @field_validator("old_price")
+    @classmethod
+    def validate_old_price_limit(cls, value: Decimal | None) -> Decimal | None:
+        return _ensure_money_fits_db(value, "Старая цена")
 
 
 class AdminProductBase(BaseModel):
@@ -118,6 +139,11 @@ class AdminPromotionBase(BaseModel):
     def normalize_slug(cls, value: str) -> str:
         return value.strip().lower()
 
+    @field_validator("discount_value")
+    @classmethod
+    def validate_discount_value_limit(cls, value: Decimal) -> Decimal:
+        return _ensure_money_fits_db(value, "Размер скидки")
+
 
 class AdminPromotionCreateIn(AdminPromotionBase):
     pass
@@ -146,6 +172,16 @@ class AdminPromoCodeBase(BaseModel):
     @classmethod
     def normalize_code(cls, value: str) -> str:
         return value.strip().upper()
+
+    @field_validator("discount_value")
+    @classmethod
+    def validate_discount_value_limit(cls, value: Decimal) -> Decimal:
+        return _ensure_money_fits_db(value, "Размер скидки")
+
+    @field_validator("minimum_order_amount")
+    @classmethod
+    def validate_minimum_order_amount_limit(cls, value: Decimal | None) -> Decimal | None:
+        return _ensure_money_fits_db(value, "Минимальная сумма заказа")
 
 class AdminPromoCodeCreateIn(AdminPromoCodeBase):
     @model_validator(mode="after")
