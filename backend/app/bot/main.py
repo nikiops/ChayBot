@@ -8,7 +8,7 @@ from aiogram.types import BotCommand, MenuButtonWebApp, WebAppInfo
 
 from app.bot.handlers.admin import router as admin_router
 from app.bot.handlers.start import router as start_router
-from app.bot.keyboards.main import is_webapp_url
+from app.bot.keyboards.main import build_webapp_url, is_webapp_url
 from app.core.config import get_settings
 from app.core.runtime import set_public_webapp_url
 from app.services.ngrok import ensure_public_webapp_url
@@ -31,7 +31,7 @@ async def configure_bot(bot: Bot, webapp_url: str) -> None:
         await bot.set_chat_menu_button(
             menu_button=MenuButtonWebApp(
                 text="Магазин",
-                web_app=WebAppInfo(url=webapp_url),
+                web_app=WebAppInfo(url=build_webapp_url(webapp_url)),
             )
         )
 

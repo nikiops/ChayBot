@@ -10,7 +10,6 @@ import { CheckoutPage } from "pages/CheckoutPage";
 import { ContactsPage } from "pages/ContactsPage";
 import { FavoritesPage } from "pages/FavoritesPage";
 import { HomePage } from "pages/HomePage";
-import { NotFoundPage } from "pages/NotFoundPage";
 import { OrderPage } from "pages/OrderPage";
 import { ProductPage } from "pages/ProductPage";
 import { useCartStore } from "store/cart-store";
@@ -66,7 +65,7 @@ function Bootstrapper() {
         <Route path="/contacts" element={<ContactsPage />} />
         <Route path="/order/:id" element={<OrderPage />} />
         <Route path="/home" element={<Navigate to="/" replace />} />
-        <Route path="*" element={<NotFoundPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppShell>
   );

@@ -6,6 +6,7 @@ from aiogram.types import (
     WebAppInfo,
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 
 def is_webapp_url(url: str) -> bool:
@@ -13,10 +14,15 @@ def is_webapp_url(url: str) -> bool:
 
 
 def build_webapp_url(base_url: str, start: str | None = None) -> str:
-    if not start:
-        return base_url
-    separator = "&" if "?" in base_url else "?"
-    return f"{base_url}{separator}start={start}"
+    parts = urlsplit(base_url)
+    query = dict(parse_qsl(parts.query, keep_blank_values=True))
+    if start:
+        query["start"] = start
+    else:
+        query.pop("start", None)
+
+    path = parts.path or "/"
+    return urlunsplit((parts.scheme, parts.netloc, path, urlencode(query), "/"))
 
 
 def main_menu_keyboard(base_url: str) -> ReplyKeyboardMarkup:
