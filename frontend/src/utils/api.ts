@@ -21,6 +21,26 @@ import { getAuthHeaders } from "utils/telegram";
 
 const API_URL = getRuntimeApiUrl();
 
+type ApiValidationIssue = {
+  loc?: Array<string | number>;
+  msg?: string;
+};
+
+function formatValidationIssues(issues: ApiValidationIssue[]): string {
+  return issues
+    .map((issue) => {
+      const path = Array.isArray(issue.loc)
+        ? issue.loc
+            .filter((part) => part !== "body")
+            .map((part) => String(part))
+            .join(".")
+        : "";
+      const message = issue.msg || "Некорректное значение.";
+      return path ? `${path}: ${message}` : message;
+    })
+    .join("\n");
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const isFormData = init?.body instanceof FormData;
   const response = await fetch(`${API_URL}${path}`, {
@@ -37,8 +57,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const raw = await response.text();
     if (raw) {
       try {
-        const payload = JSON.parse(raw) as { detail?: string };
-        message = payload.detail || raw || message;
+        const payload = JSON.parse(raw) as { detail?: string | ApiValidationIssue[] };
+        if (Array.isArray(payload.detail)) {
+          message = formatValidationIssues(payload.detail) || message;
+        } else if (typeof payload.detail === "string") {
+          message = payload.detail || raw || message;
+        } else {
+          message = raw || message;
+        }
       } catch {
         message = raw;
       }

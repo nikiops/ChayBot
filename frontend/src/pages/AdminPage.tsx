@@ -133,6 +133,32 @@ function parseIds(value: string) {
   return value.split(",").map((item) => Number(item.trim())).filter((item) => Number.isFinite(item) && item > 0);
 }
 
+function validateProductFormState(form: ProductFormState): string | null {
+  if (!form.image_url.trim()) return "Сначала загрузите фото товара.";
+  if (!form.category_id.trim()) return "Выберите категорию товара.";
+  if (form.name.trim().length < 3) return "Название товара должно быть не короче 3 символов.";
+  if (form.slug.trim().length < 3) return "Slug товара должен быть не короче 3 символов.";
+  if (form.short_description.trim().length < 10) return "Короткое описание должно быть не короче 10 символов.";
+  if (form.full_description.trim().length < 20) return "Полное описание должно быть не короче 20 символов.";
+  if (!form.pack_sizes.length) return "Добавьте хотя бы одну фасовку.";
+
+  for (const [index, pack] of form.pack_sizes.entries()) {
+    const prefix = `Фасовка ${index + 1}`;
+    const price = Number(pack.price);
+    const stockQty = Number(pack.stock_qty);
+    const sortOrder = Number(pack.sort_order);
+
+    if (pack.label.trim().length < 2) return `${prefix}: укажите название длиной от 2 символов.`;
+    if (pack.weight_grams && Number(pack.weight_grams) < 1) return `${prefix}: вес должен быть больше 0.`;
+    if (!Number.isFinite(price) || price <= 0) return `${prefix}: цена должна быть больше 0.`;
+    if (pack.old_price && Number(pack.old_price) <= 0) return `${prefix}: старая цена должна быть больше 0.`;
+    if (!Number.isFinite(stockQty) || stockQty < 0) return `${prefix}: остаток не может быть отрицательным.`;
+    if (!Number.isFinite(sortOrder) || sortOrder < 0) return `${prefix}: порядок не может быть отрицательным.`;
+  }
+
+  return null;
+}
+
 function stringifyIds(ids: number[]) {
   return ids.join(", ");
 }
@@ -324,8 +350,9 @@ export function AdminPage() {
   }
 
   async function submitProductForm() {
-    if (!productForm.image_url.trim()) {
-      throw new Error("Сначала загрузите фото товара.");
+    const validationError = validateProductFormState(productForm);
+    if (validationError) {
+      throw new Error(validationError);
     }
 
     const payload = {
