@@ -101,7 +101,12 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def database_sync_url(self) -> str:
-        return self.database_url.replace("+asyncpg", "").replace("+aiosqlite", "")
+        sync_url = self.database_url
+        if "+asyncpg" in sync_url:
+            return sync_url.replace("+asyncpg", "+psycopg")
+        if "+aiosqlite" in sync_url:
+            return sync_url.replace("+aiosqlite", "")
+        return sync_url
 
     @computed_field
     @property
