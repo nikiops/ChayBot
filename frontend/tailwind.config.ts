@@ -34,7 +34,7 @@ export default {
       },
       backgroundImage: {
         "paper-glow":
-          "radial-gradient(circle at top left, rgba(212, 166, 64, 0.28), rgba(212, 166, 64, 0) 34%), radial-gradient(circle at top right, rgba(155, 197, 61, 0.12), rgba(155, 197, 61, 0) 24%), radial-gradient(circle at bottom center, rgba(240, 207, 130, 0.14), rgba(240, 207, 130, 0) 34%), linear-gradient(180deg, #110c08 0%, #1a120b 42%, #24180e 100%)",
+          "radial-gradient(circle at top left, rgba(224, 177, 78, 0.34), rgba(224, 177, 78, 0) 36%), radial-gradient(circle at top right, rgba(178, 209, 93, 0.14), rgba(178, 209, 93, 0) 26%), radial-gradient(circle at bottom center, rgba(245, 214, 144, 0.18), rgba(245, 214, 144, 0) 36%), linear-gradient(180deg, #181008 0%, #24180f 44%, #302216 100%)",
       },
       keyframes: {
         floatIn: {

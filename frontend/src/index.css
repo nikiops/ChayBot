@@ -20,10 +20,10 @@ body,
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top right, rgba(240, 207, 130, 0.24), transparent 30%),
-    radial-gradient(circle at top left, rgba(212, 166, 64, 0.22), transparent 24%),
-    radial-gradient(circle at bottom left, rgba(217, 166, 64, 0.14), transparent 24%),
-    linear-gradient(180deg, #120c07 0%, #1a120b 52%, #24180e 100%);
+    radial-gradient(circle at top right, rgba(245, 214, 144, 0.28), transparent 32%),
+    radial-gradient(circle at top left, rgba(224, 177, 78, 0.24), transparent 26%),
+    radial-gradient(circle at bottom left, rgba(224, 177, 78, 0.16), transparent 26%),
+    linear-gradient(180deg, #181008 0%, #24180f 52%, #302216 100%);
 }
 
 * {
