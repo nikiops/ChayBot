@@ -15,17 +15,17 @@ export function BottomNav() {
   const totalItems = useCartStore((state) => state.cart?.total_items ?? 0);
 
   return (
-    <nav className="fixed bottom-3 left-1/2 z-20 w-[calc(100%-1rem)] max-w-[440px] -translate-x-1/2 rounded-[2rem] border border-bark-500/35 bg-[#24170d]/92 px-2 py-2 shadow-card backdrop-blur-2xl">
+    <nav className="fixed bottom-3 left-1/2 z-20 w-[calc(100%-1rem)] max-w-[440px] -translate-x-1/2 rounded-[1.9rem] border border-[#c39545]/20 bg-[#1a120d]/88 px-2.5 py-2.5 shadow-card backdrop-blur-2xl">
       <div className="grid grid-cols-5 gap-1">
         {items.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              `pressable relative flex min-h-[60px] flex-col items-center justify-center rounded-[1.4rem] text-[11px] font-semibold transition ${
+              `pressable relative flex min-h-[58px] flex-col items-center justify-center rounded-[1.35rem] text-[11px] font-semibold transition ${
                 isActive
-                  ? "bg-gradient-to-b from-[#F0CF82] to-[#D9A640] text-[#140d08] shadow-soft"
-                  : "text-[#F6E4BA] hover:bg-white/6 hover:text-white"
+                  ? "bg-gradient-to-b from-[#f3d596] to-[#d7a145] text-[#140d08] shadow-soft"
+                  : "text-[#d7c09b] hover:bg-white/6 hover:text-white"
               }`
             }
           >

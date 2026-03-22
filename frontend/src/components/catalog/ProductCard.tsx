@@ -17,9 +17,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const isFavorite = useFavoritesStore((state) => state.isFavorite(product.id));
 
   return (
-    <article className="glass-card overflow-hidden">
+    <article className="glass-card overflow-hidden border border-[#f1d28f]/16 bg-[#ead39c]">
       <div className="relative">
-        <img src={resolveMediaUrl(product.image_url)} alt={product.name} className="h-44 w-full object-cover" />
+        <img src={resolveMediaUrl(product.image_url)} alt={product.name} className="h-48 w-full object-cover" />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/28 to-transparent" />
         <button
           type="button"
           onClick={() => void toggleFavorite(product.id)}
@@ -35,17 +36,17 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         ) : null}
       </div>
-      <div className="p-4">
-        <div className="mb-2 flex items-start justify-between gap-3">
+      <div className="p-5">
+        <div className="mb-3 flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-base font-extrabold text-tea-900">{product.name}</h3>
+            <h3 className="text-[1.05rem] font-extrabold text-tea-900">{product.name}</h3>
             <p className="mt-2 text-sm leading-6 text-fog">{buildProductSubtitle(product.short_description)}</p>
           </div>
         </div>
-        <div className="rounded-[1.2rem] bg-bark-100/60 px-3 py-2 text-xs font-semibold text-bark-700">
+        <div className="rounded-[1.2rem] border border-white/40 bg-bark-100/55 px-3 py-2 text-xs font-semibold text-bark-700">
           от {product.default_pack_size.label}
         </div>
-        <div className="mt-4 flex items-end justify-between gap-3">
+        <div className="mt-5 flex items-end justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-lg font-extrabold text-tea-900">{formatPrice(product.price)}</span>
@@ -58,7 +59,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="flex gap-2">
             <Link
               to={`/product/${product.slug}`}
-              className="pressable rounded-full border border-tea-900/12 px-4 py-2 text-sm font-semibold text-tea-900"
+              className="pressable rounded-full border border-tea-900/12 bg-white/35 px-4 py-2 text-sm font-semibold text-tea-900"
             >
               Открыть
             </Link>

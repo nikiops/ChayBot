@@ -69,6 +69,7 @@ export function CatalogPage() {
     <div className="space-y-6">
       <section className="glass-card p-5">
         <SectionTitle
+          tone="dark"
           eyebrow={slug ? "раздел" : "каталог"}
           title={category?.name ?? "Весь каталог"}
           subtitle={
@@ -119,7 +120,9 @@ export function CatalogPage() {
       <section>
         <div className="mb-4 flex items-center justify-between">
           <SectionTitle eyebrow="товары" title="Подходящие позиции" subtitle="Карточки адаптированы под быстрый просмотр и добавление в корзину." />
-          <div className="rounded-full bg-white/70 px-3 py-2 text-xs font-semibold text-fog shadow-soft">{products.length} товаров</div>
+          <div className="rounded-full border border-white/10 bg-white/8 px-3 py-2 text-xs font-semibold text-[#d7c19d] shadow-soft">
+            {products.length} товаров
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-4">
           {loading ? Array.from({ length: 4 }).map((_, index) => <ProductSkeleton key={index} />) : null}
@@ -135,4 +138,3 @@ export function CatalogPage() {
     </div>
   );
 }
-
