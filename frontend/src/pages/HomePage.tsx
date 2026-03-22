@@ -146,13 +146,13 @@ export function HomePage() {
       </section>
 
       <section>
-        <div className="mb-4 flex items-end justify-between gap-4">
+        <div className="mb-4 flex items-end justify-between gap-4 rounded-[1.7rem] border border-white/10 bg-white/[0.055] px-4 py-4 shadow-soft backdrop-blur-sm">
           <SectionTitle
             eyebrow="категории"
             title="Коллекции чая"
             subtitle="От глубокого пуэра до светлых позиций и аксессуаров для красивой подачи."
           />
-          <Link to="/catalog" className="shrink-0 text-sm font-semibold text-[#e0c897]">
+          <Link to="/catalog" className="shrink-0 text-sm font-semibold text-[#f0dfb7]">
             Все разделы
           </Link>
         </div>
@@ -164,9 +164,9 @@ export function HomePage() {
       </section>
 
       <section>
-        <div className="mb-4 flex items-end justify-between gap-4">
+        <div className="mb-4 flex items-end justify-between gap-4 rounded-[1.7rem] border border-white/10 bg-white/[0.055] px-4 py-4 shadow-soft backdrop-blur-sm">
           <SectionTitle eyebrow="подборка" title="Популярное" subtitle="Чаи, с которых удобно начать знакомство." />
-          <Link to="/catalog" className="shrink-0 text-sm font-semibold text-[#e0c897]">
+          <Link to="/catalog" className="shrink-0 text-sm font-semibold text-[#f0dfb7]">
             Весь каталог
           </Link>
         </div>

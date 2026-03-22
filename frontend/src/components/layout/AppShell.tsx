@@ -10,7 +10,7 @@ export function AppShell({ children }: PropsWithChildren) {
           <div className="max-w-[17rem]">
             <p className="text-xs font-semibold uppercase tracking-[0.32em] text-bark-500/80">Golden Tea</p>
             <h1 className="font-display text-[2rem] font-semibold leading-none text-parchment">Чайная витрина</h1>
-            <p className="mt-1 text-xs leading-5 text-[#dac7a7]/72">Китайский чай для спокойной домашней церемонии.</p>
+            <p className="mt-1 text-xs leading-5 text-[#ead9b6]/82">Китайский чай для спокойной домашней церемонии.</p>
           </div>
           <div className="rounded-full border border-bark-500/24 bg-[#120f0c]/78 px-3 py-1.5 text-xs font-medium text-bark-500 shadow-soft">
             Mini App

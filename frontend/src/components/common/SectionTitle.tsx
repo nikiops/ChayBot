@@ -6,9 +6,9 @@ type SectionTitleProps = {
 };
 
 export function SectionTitle({ eyebrow, title, subtitle, tone = "light" }: SectionTitleProps) {
-  const eyebrowClass = tone === "light" ? "text-[#cdb689]/72" : "text-tea-700/60";
-  const titleClass = tone === "light" ? "text-parchment" : "text-tea-900";
-  const subtitleClass = tone === "light" ? "text-[#dac7a7]/74" : "text-fog";
+  const eyebrowClass = tone === "light" ? "text-[#d7c39c]/84" : "text-tea-700/60";
+  const titleClass = tone === "light" ? "text-[#f0dfb7]" : "text-tea-900";
+  const subtitleClass = tone === "light" ? "text-[#e8d8b4]/88" : "text-fog";
 
   return (
     <div className="mb-4">
