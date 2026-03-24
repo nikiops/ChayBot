@@ -48,10 +48,10 @@ export function buildTelegramMiniAppUrl(startParam?: string | null): string {
   }
 
   if (startParam) {
-    return `https://t.me/${username}?startapp=${encodeURIComponent(startParam)}`;
+    return `https://t.me/${username}?start=${encodeURIComponent(startParam)}`;
   }
 
-  return `https://t.me/${username}?startapp`;
+  return `https://t.me/${username}?start=store`;
 }
 
 export function initTelegramWebApp() {
