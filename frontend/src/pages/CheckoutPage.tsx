@@ -7,7 +7,7 @@ import type { CheckoutPaymentConfig } from "types/api";
 import { useCartStore } from "store/cart-store";
 import { api } from "utils/api";
 import { formatPrice } from "utils/format";
-import { getTelegramUserName, triggerSuccessHaptic } from "utils/telegram";
+import { buildTelegramMiniAppUrl, getTelegramUserName, isTelegramMiniApp, triggerSuccessHaptic } from "utils/telegram";
 
 export function CheckoutPage() {
   const navigate = useNavigate();
@@ -22,12 +22,15 @@ export function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const inTelegram = isTelegramMiniApp();
 
   useEffect(() => {
+    if (!inTelegram) return;
     if (!cart) void fetchCart();
-  }, [cart, fetchCart]);
+  }, [cart, fetchCart, inTelegram]);
 
   useEffect(() => {
+    if (!inTelegram) return;
     let active = true;
 
     async function loadConfig() {
@@ -48,7 +51,26 @@ export function CheckoutPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [inTelegram]);
+
+  if (!inTelegram) {
+    return (
+      <EmptyState
+        title="Оформление доступно в Telegram"
+        description="Откройте магазин в Telegram Mini App, чтобы использовать корзину, оплату и подтверждение заказа."
+        action={
+          <a
+            href={buildTelegramMiniAppUrl("cart")}
+            target="_blank"
+            rel="noreferrer"
+            className="pressable rounded-full bg-tea-900 px-5 py-3 text-sm font-semibold text-white"
+          >
+            Перейти в Telegram
+          </a>
+        }
+      />
+    );
+  }
 
   if (!cart || cart.items.length === 0) {
     return (

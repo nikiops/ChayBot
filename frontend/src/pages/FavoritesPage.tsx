@@ -5,13 +5,35 @@ import { ProductCard } from "components/catalog/ProductCard";
 import { EmptyState } from "components/common/EmptyState";
 import { ProductSkeleton } from "components/skeletons/ProductSkeleton";
 import { useFavoritesStore } from "store/favorites-store";
+import { buildTelegramMiniAppUrl, isTelegramMiniApp } from "utils/telegram";
 
 export function FavoritesPage() {
   const { items, loading, fetchFavorites } = useFavoritesStore();
+  const inTelegram = isTelegramMiniApp();
 
   useEffect(() => {
+    if (!inTelegram) return;
     if (items.length === 0) void fetchFavorites();
-  }, [items.length, fetchFavorites]);
+  }, [items.length, fetchFavorites, inTelegram]);
+
+  if (!inTelegram) {
+    return (
+      <EmptyState
+        title="Избранное доступно в Telegram"
+        description="Сохраняйте позиции и возвращайтесь к ним в Mini App, где работает персональный профиль пользователя."
+        action={
+          <a
+            href={buildTelegramMiniAppUrl("favorites")}
+            target="_blank"
+            rel="noreferrer"
+            className="pressable rounded-full bg-tea-900 px-5 py-3 text-sm font-semibold text-white"
+          >
+            Перейти в Telegram
+          </a>
+        }
+      />
+    );
+  }
 
   if (loading && items.length === 0) {
     return (
@@ -51,4 +73,3 @@ export function FavoritesPage() {
     </div>
   );
 }
-

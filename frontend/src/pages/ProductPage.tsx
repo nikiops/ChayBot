@@ -11,6 +11,7 @@ import { useFavoritesStore } from "store/favorites-store";
 import { api } from "utils/api";
 import { formatPrice } from "utils/format";
 import { resolveMediaUrl } from "utils/runtime-config";
+import { buildTelegramMiniAppUrl, isTelegramMiniApp } from "utils/telegram";
 
 export function ProductPage() {
   const { slug } = useParams();
@@ -22,6 +23,7 @@ export function ProductPage() {
   const [selectedPackId, setSelectedPackId] = useState<number | null>(null);
   const [qty, setQty] = useState(1);
   const [loading, setLoading] = useState(true);
+  const inTelegram = isTelegramMiniApp();
 
   useEffect(() => {
     if (!slug) return;
@@ -67,6 +69,8 @@ export function ProductPage() {
       />
     );
   }
+
+  const telegramUrl = buildTelegramMiniAppUrl(`product:${product.slug}`);
 
   return (
     <div className="space-y-5">
@@ -146,28 +150,44 @@ export function ProductPage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
-            <button
-              type="button"
-              disabled={!selectedPack.is_in_stock}
-              onClick={() => void addToCart(product.id, selectedPack.id, qty)}
-              className="pressable rounded-full bg-tea-900 px-5 py-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <ShoppingBag className="mr-2 inline h-4 w-4" />
-              Добавить в корзину
-            </button>
-            <button
-              type="button"
-              disabled={!selectedPack.is_in_stock}
-              onClick={async () => {
-                await addToCart(product.id, selectedPack.id, qty);
-                navigate("/cart");
-              }}
-              className="pressable rounded-full bg-bark-100 px-5 py-4 text-sm font-semibold text-bark-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Купить сейчас
-            </button>
-          </div>
+          {inTelegram ? (
+            <div className="grid grid-cols-1 gap-3">
+              <button
+                type="button"
+                disabled={!selectedPack.is_in_stock}
+                onClick={() => void addToCart(product.id, selectedPack.id, qty)}
+                className="pressable rounded-full bg-tea-900 px-5 py-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <ShoppingBag className="mr-2 inline h-4 w-4" />
+                Добавить в корзину
+              </button>
+              <button
+                type="button"
+                disabled={!selectedPack.is_in_stock}
+                onClick={async () => {
+                  await addToCart(product.id, selectedPack.id, qty);
+                  navigate("/cart");
+                }}
+                className="pressable rounded-full bg-bark-100 px-5 py-4 text-sm font-semibold text-bark-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Купить сейчас
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3 rounded-[1.5rem] border border-white/10 bg-white/8 p-4">
+              <p className="text-sm leading-6 text-[#ead9b6]/86">
+                Оформление заказа работает в Telegram Mini App. Откройте товар в боте, и корзина с оформлением будут доступны сразу.
+              </p>
+              <a
+                href={telegramUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="pressable inline-flex w-full items-center justify-center rounded-full bg-tea-900 px-5 py-4 text-sm font-semibold text-white"
+              >
+                Открыть в Telegram
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,8 +1,11 @@
 import type { PropsWithChildren } from "react";
 
 import { BottomNav } from "components/layout/BottomNav";
+import { buildTelegramMiniAppUrl, isTelegramMiniApp } from "utils/telegram";
 
 export function AppShell({ children }: PropsWithChildren) {
+  const inTelegram = isTelegramMiniApp();
+
   return (
     <div className="min-h-screen bg-paper-glow text-tea-900">
       <div className="mx-auto min-h-screen max-w-[460px] px-4 pb-12 pt-4 safe-bottom">
@@ -16,6 +19,22 @@ export function AppShell({ children }: PropsWithChildren) {
             Mini App
           </div>
         </div>
+        {!inTelegram ? (
+          <div className="mb-5 rounded-[1.6rem] border border-[#d7b16a]/22 bg-white/10 px-4 py-4 shadow-soft backdrop-blur-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d9c49c]/78">режим браузера</p>
+            <p className="mt-2 text-sm leading-6 text-[#ead9b6]/88">
+              Каталог доступен прямо здесь, а оформление заказа, корзина и избранное работают внутри Telegram Mini App.
+            </p>
+            <a
+              href={buildTelegramMiniAppUrl()}
+              target="_blank"
+              rel="noreferrer"
+              className="pressable mt-4 inline-flex rounded-full bg-tea-900 px-4 py-3 text-sm font-semibold text-white"
+            >
+              Перейти в Telegram
+            </a>
+          </div>
+        ) : null}
         <main className="animate-float-in">{children}</main>
       </div>
       <BottomNav />

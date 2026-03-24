@@ -14,7 +14,7 @@ import { OrderPage } from "pages/OrderPage";
 import { ProductPage } from "pages/ProductPage";
 import { useCartStore } from "store/cart-store";
 import { useFavoritesStore } from "store/favorites-store";
-import { getStartParam, initTelegramWebApp } from "utils/telegram";
+import { getStartParam, initTelegramWebApp, isTelegramMiniApp } from "utils/telegram";
 
 function Bootstrapper() {
   const fetchCart = useCartStore((state) => state.fetchCart);
@@ -23,6 +23,7 @@ function Bootstrapper() {
   const location = useLocation();
 
   useEffect(() => {
+    if (!isTelegramMiniApp()) return;
     initTelegramWebApp();
     void fetchCart();
     void fetchFavorites();
@@ -30,11 +31,16 @@ function Bootstrapper() {
 
   useEffect(() => {
     if (location.pathname !== "/") return;
+    if (!isTelegramMiniApp()) return;
     const startParam = getStartParam();
     if (!startParam) return;
 
     if (startParam === "cart") {
       navigate("/cart", { replace: true });
+      return;
+    }
+    if (startParam === "favorites") {
+      navigate("/favorites", { replace: true });
       return;
     }
     if (startParam.startsWith("category:")) {

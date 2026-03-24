@@ -3,6 +3,7 @@ declare global {
     __GOLDEN_TEA_CONFIG__?: {
       API_URL?: string;
       DEMO_USER_ID?: string;
+      TELEGRAM_BOT_USERNAME?: string;
     };
   }
 }
@@ -20,6 +21,10 @@ export function getRuntimeApiUrl() {
 
 export function getRuntimeDemoUserId() {
   return getRuntimeConfig().DEMO_USER_ID ?? import.meta.env.VITE_DEMO_USER_ID ?? "900000001";
+}
+
+export function getRuntimeTelegramBotUsername() {
+  return getRuntimeConfig().TELEGRAM_BOT_USERNAME ?? import.meta.env.VITE_TELEGRAM_BOT_USERNAME ?? "PGTEA_bot";
 }
 
 export function resolveMediaUrl(path: string | null | undefined) {

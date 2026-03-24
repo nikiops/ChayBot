@@ -1,4 +1,4 @@
-import { getRuntimeDemoUserId } from "utils/runtime-config";
+import { getRuntimeDemoUserId, getRuntimeTelegramBotUsername } from "utils/runtime-config";
 
 declare global {
   interface Window {
@@ -33,6 +33,25 @@ const TELEGRAM_INIT_DATA_POLL_MS = 50;
 
 export function getTelegramWebApp() {
   return window.Telegram?.WebApp;
+}
+
+export function isTelegramMiniApp(): boolean {
+  const webApp = getTelegramWebApp();
+  const url = new URL(window.location.href);
+  return Boolean(webApp?.initData || webApp?.initDataUnsafe?.user || url.searchParams.get("tgWebAppPlatform"));
+}
+
+export function buildTelegramMiniAppUrl(startParam?: string | null): string {
+  const username = getRuntimeTelegramBotUsername().replace(/^@/, "").trim();
+  if (!username) {
+    return "https://t.me";
+  }
+
+  if (startParam) {
+    return `https://t.me/${username}?startapp=${encodeURIComponent(startParam)}`;
+  }
+
+  return `https://t.me/${username}?startapp`;
 }
 
 export function initTelegramWebApp() {
@@ -81,6 +100,7 @@ export function getAuthHeaders(): HeadersInit {
 }
 
 export function getTelegramUserName(): string {
+  if (!isTelegramMiniApp()) return "Гость чайной лавки";
   const user = getTelegramWebApp()?.initDataUnsafe?.user;
   if (!user) return "Гость чайной лавки";
   return user.first_name || user.username || "Гость чайной лавки";

@@ -8,13 +8,35 @@ import { ProductSkeleton } from "components/skeletons/ProductSkeleton";
 import { useCartStore } from "store/cart-store";
 import { formatPrice } from "utils/format";
 import { resolveMediaUrl } from "utils/runtime-config";
+import { buildTelegramMiniAppUrl, isTelegramMiniApp } from "utils/telegram";
 
 export function CartPage() {
   const { cart, loading, error, promoCode, fetchCart, setPromoCode, applyPromoCode, updateQty, removeItem } = useCartStore();
+  const inTelegram = isTelegramMiniApp();
 
   useEffect(() => {
+    if (!inTelegram) return;
     if (!cart) void fetchCart();
-  }, [cart, fetchCart]);
+  }, [cart, fetchCart, inTelegram]);
+
+  if (!inTelegram) {
+    return (
+      <EmptyState
+        title="Корзина работает в Telegram"
+        description="В браузере можно смотреть каталог, а оформление заказа, корзина и промокоды доступны внутри Mini App."
+        action={
+          <a
+            href={buildTelegramMiniAppUrl("cart")}
+            target="_blank"
+            rel="noreferrer"
+            className="pressable rounded-full bg-tea-900 px-5 py-3 text-sm font-semibold text-white"
+          >
+            Перейти в Telegram
+          </a>
+        }
+      />
+    );
+  }
 
   if (loading && !cart) {
     return (

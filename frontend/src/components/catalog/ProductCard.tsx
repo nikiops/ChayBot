@@ -6,6 +6,7 @@ import { useCartStore } from "store/cart-store";
 import { useFavoritesStore } from "store/favorites-store";
 import { buildProductSubtitle, formatPrice } from "utils/format";
 import { resolveMediaUrl } from "utils/runtime-config";
+import { buildTelegramMiniAppUrl, isTelegramMiniApp } from "utils/telegram";
 
 type ProductCardProps = {
   product: Product;
@@ -15,21 +16,25 @@ export function ProductCard({ product }: ProductCardProps) {
   const addToCart = useCartStore((state) => state.addToCart);
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
   const isFavorite = useFavoritesStore((state) => state.isFavorite(product.id));
+  const inTelegram = isTelegramMiniApp();
+  const telegramUrl = buildTelegramMiniAppUrl(`product:${product.slug}`);
 
   return (
     <article className="glass-card overflow-hidden border border-[#f1d28f]/16 bg-[#ead39c]">
       <div className="relative">
         <img src={resolveMediaUrl(product.image_url)} alt={product.name} className="h-48 w-full object-cover" />
         <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/28 to-transparent" />
-        <button
-          type="button"
-          onClick={() => void toggleFavorite(product.id)}
-          className={`pressable absolute right-3 top-3 rounded-full border border-white/60 p-2 backdrop-blur-sm ${
-            isFavorite ? "bg-tea-900 text-white" : "bg-white/80 text-tea-900"
-          }`}
-        >
-          <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
-        </button>
+        {inTelegram ? (
+          <button
+            type="button"
+            onClick={() => void toggleFavorite(product.id)}
+            className={`pressable absolute right-3 top-3 rounded-full border border-white/60 p-2 backdrop-blur-sm ${
+              isFavorite ? "bg-tea-900 text-white" : "bg-white/80 text-tea-900"
+            }`}
+          >
+            <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
+          </button>
+        ) : null}
         {product.discount_percent ? (
           <div className="absolute left-3 top-3 rounded-full bg-bark-500 px-3 py-1 text-xs font-bold text-white">
             -{product.discount_percent}%
@@ -63,15 +68,26 @@ export function ProductCard({ product }: ProductCardProps) {
             >
               Открыть
             </Link>
-            <button
-              type="button"
-              disabled={!product.is_in_stock}
-              onClick={() => void addToCart(product.id, product.default_pack_size.id, 1)}
-              className="pressable rounded-full bg-tea-900 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <ShoppingBag className="mr-1 inline h-4 w-4" />
-              В корзину
-            </button>
+            {inTelegram ? (
+              <button
+                type="button"
+                disabled={!product.is_in_stock}
+                onClick={() => void addToCart(product.id, product.default_pack_size.id, 1)}
+                className="pressable rounded-full bg-tea-900 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <ShoppingBag className="mr-1 inline h-4 w-4" />
+                В корзину
+              </button>
+            ) : (
+              <a
+                href={telegramUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="pressable rounded-full bg-tea-900 px-4 py-2 text-sm font-semibold text-white"
+              >
+                В Telegram
+              </a>
+            )}
           </div>
         </div>
       </div>
